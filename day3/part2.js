@@ -15,86 +15,64 @@ const characters = lines.map((line, y) =>
 const partNumbers = characters.flatMap((line) => {
   const numbers = [];
   let state = "symbol";
-  let newNumber = {
-    xStart: 0,
-    xEnd: 0,
-    y: 0,
-    number: "",
-  };
   line.forEach((char) => {
     switch (state) {
       case "symbol":
         if (char.isNumber) {
-          newNumber.number = char.char;
-          newNumber.xStart = char.x;
-          newNumber.xEnd = char.x;
-          newNumber.y = char.y;
+          numbers.push({
+            xStart: char.x,
+            xEnd: char.x,
+            y: char.y,
+            number: char.char,
+          });
           state = "number";
         }
         break;
       case "number":
         if (char.isNumber) {
-          newNumber.number += char.char;
-          newNumber.xEnd = char.x;
+          const currentNumber = numbers[numbers.length - 1];
+          currentNumber.number += char.char;
+          currentNumber.xEnd = char.x;
         } else {
-          numbers.push(newNumber);
-          newNumber = {
-            xStart: 0,
-            xEnd: 0,
-            y: 0,
-            number: "",
-          };
           state = "symbol";
         }
         break;
     }
   });
-  if (state == "number") {
-    newNumber.xEnd == line.length - 1;
-    numbers.push(newNumber);
-  }
   return numbers;
 });
 
 const validPartNumbers = partNumbers.filter((partNumber) => {
-  let isValid = false;
-  for (let x = partNumber.xStart; x <= partNumber.xEnd; x++) {
-    for (let i = -1; i <= 1; i++) {
-      for (let j = -1; j <= 1; j++) {
-        if (i == 0 && j == 0) {
-          continue;
-        }
-        if (
-          characters[partNumber.y + j] != null &&
-          characters[partNumber.y + j][x + i] != null &&
-          characters[partNumber.y + j][x + i].isSymbol
-        ) {
-          isValid = true;
-        }
+  for (let x = partNumber.xStart - 1; x <= partNumber.xEnd + 1; x++) {
+    for (let y = partNumber.y - 1; y <= partNumber.y + 1; y++) {
+      if (
+        characters[y] != null &&
+        characters[y][x] != null &&
+        characters[y][x].isSymbol
+      ) {
+        return true;
       }
     }
   }
-
-  return isValid;
+  return false;
 });
 
 const gears = characters
   .flatMap((line) =>
-    line.map((char) => {
-      if (char.char != "*") {
-        return [];
-      }
-      return validPartNumbers.filter((partNumber) => {
-        const yDiff = Math.abs(partNumber.y - char.y);
-        if (yDiff > 1) {
-          return false;
-        }
-        if (char.x < partNumber.xStart - 1 || partNumber.xEnd + 1 < char.x) {
-          return false;
-        }
-        return true;
-      });
-    })
+    line
+      .filter(({ char }) => char == "*")
+      .map((char) => {
+        return validPartNumbers.filter((partNumber) => {
+          const yDiff = Math.abs(partNumber.y - char.y);
+          if (yDiff > 1) {
+            return false;
+          }
+          if (char.x < partNumber.xStart - 1 || partNumber.xEnd + 1 < char.x) {
+            return false;
+          }
+          return true;
+        });
+      })
   )
   .filter((adjacentParts) => adjacentParts.length == 2)
   .map(([part1, part2]) => +part1.number * +part2.number)
