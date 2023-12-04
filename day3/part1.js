@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { sum } = require("../helpers");
 const input = fs.readFileSync("./input.txt").toString();
 const lines = input.split("\n");
 
@@ -42,22 +43,23 @@ const partNumbers = characters.flatMap((line) => {
   return numbers;
 });
 
-const validPartNumbers = partNumbers
-  .filter((partNumber) => {
-    for (let x = partNumber.xStart - 1; x <= partNumber.xEnd + 1; x++) {
-      for (let y = partNumber.y - 1; y <= partNumber.y + 1; y++) {
-        if (
-          characters[y] != null &&
-          characters[y][x] != null &&
-          characters[y][x].isSymbol
-        ) {
-          return true;
+console.log(
+  sum(
+    partNumbers
+      .filter((partNumber) => {
+        for (let x = partNumber.xStart - 1; x <= partNumber.xEnd + 1; x++) {
+          for (let y = partNumber.y - 1; y <= partNumber.y + 1; y++) {
+            if (
+              characters[y] != null &&
+              characters[y][x] != null &&
+              characters[y][x].isSymbol
+            ) {
+              return true;
+            }
+          }
         }
-      }
-    }
-    return false;
-  })
-  .map((partNumber) => +partNumber.number)
-  .reduce((a, b) => a + b, 0);
-
-console.log(JSON.stringify(validPartNumbers));
+        return false;
+      })
+      .map((partNumber) => +partNumber.number)
+  )
+);

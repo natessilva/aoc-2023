@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { sum } = require("../helpers");
 const input = fs.readFileSync("./input.txt").toString();
 const lines = input.split("\n");
 
@@ -57,25 +58,29 @@ const validPartNumbers = partNumbers.filter((partNumber) => {
   return false;
 });
 
-const gears = characters
-  .flatMap((line) =>
-    line
-      .filter(({ char }) => char == "*")
-      .map((char) => {
-        return validPartNumbers.filter((partNumber) => {
-          const yDiff = Math.abs(partNumber.y - char.y);
-          if (yDiff > 1) {
-            return false;
-          }
-          if (char.x < partNumber.xStart - 1 || partNumber.xEnd + 1 < char.x) {
-            return false;
-          }
-          return true;
-        });
-      })
-  )
-  .filter((adjacentParts) => adjacentParts.length == 2)
-  .map(([part1, part2]) => +part1.number * +part2.number)
-  .reduce((a, b) => a + b, 0);
+const gears = sum(
+  characters
+    .flatMap((line) =>
+      line
+        .filter(({ char }) => char == "*")
+        .map((char) => {
+          return validPartNumbers.filter((partNumber) => {
+            const yDiff = Math.abs(partNumber.y - char.y);
+            if (yDiff > 1) {
+              return false;
+            }
+            if (
+              char.x < partNumber.xStart - 1 ||
+              partNumber.xEnd + 1 < char.x
+            ) {
+              return false;
+            }
+            return true;
+          });
+        })
+    )
+    .filter((adjacentParts) => adjacentParts.length == 2)
+    .map(([part1, part2]) => +part1.number * +part2.number)
+);
 
 console.log(gears);

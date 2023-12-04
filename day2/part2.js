@@ -1,10 +1,11 @@
 const fs = require("fs");
+const { sum } = require("../helpers");
 const input = fs.readFileSync("./input.txt").toString();
 const lines = input.split("\n");
 
 console.log(
-  lines
-    .map((line) => {
+  sum(
+    lines.map((line) => {
       const [_, rest] = line.split(": ");
 
       const turns = rest.split("; ");
@@ -29,5 +30,5 @@ console.log(
       );
       return maxBlue * maxRed * maxGreen;
     })
-    .reduce((a, b) => a + b, 0)
+  )
 );

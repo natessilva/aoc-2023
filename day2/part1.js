@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { sum } = require("../helpers");
 const input = fs.readFileSync("./input.txt").toString();
 const lines = input.split("\n");
 
@@ -8,8 +9,8 @@ config = {
   blue: 14,
 };
 console.log(
-  lines
-    .map((line) => {
+  sum(
+    lines.map((line) => {
       const [game, rest] = line.split(": ");
       const [_, gameNumber] = game.split(" ");
 
@@ -33,5 +34,5 @@ console.log(
         .every((t) => t);
       return isPossible ? +gameNumber : 0;
     })
-    .reduce((a, b) => a + b, 0)
+  )
 );

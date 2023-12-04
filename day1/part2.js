@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { sum } = require("../helpers");
 const input = fs.readFileSync("./input.txt").toString();
 const lines = input.split("\n");
 
@@ -15,8 +16,8 @@ const digitStrings = [
 ];
 const digitNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 console.log(
-  lines
-    .map((line) => {
+  sum(
+    lines.map((line) => {
       const stringIndex = Math.min(
         ...digitStrings
           .map((digit) => line.indexOf(digit))
@@ -67,5 +68,5 @@ console.log(
       }
       return firstDigit + secondDigit;
     })
-    .reduce((a, b) => +a + +b, 0)
+  )
 );
